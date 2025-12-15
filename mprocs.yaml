@@ -1,12 +1,10 @@
 procs:
   backend:
-    cmd: cd backend && uv run uvicorn src.main:app --reload --port 8765
+    cmd: ["sh", "-c", "cd backend && uv run uvicorn src.main:app --reload --port 8765"]
     env:
       PYTHONUNBUFFERED: "1"
-    cwd: .
 
   desktop:
-    cmd: cd desktop && bun run dev
-    cwd: .
+    cmd: ["sh", "-c", "cd desktop && bun run dev"]
     depends_on:
       - backend
