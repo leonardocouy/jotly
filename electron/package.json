@@ -1,0 +1,22 @@
+{
+  "name": "jotly",
+  "version": "0.1.0",
+  "description": "Type less. Say more. Jotly is a dead-simple voice-to-text tool that lives on your desktop and respects your privacy. Open-source, offline-first, and lightning fast.",
+  "main": "dist/main/index.js",
+  "author": "Softaworks",
+  "license": "MIT",
+  "scripts": {
+    "dev": "bun run build && electron .",
+    "build": "bun build src/main/index.ts --outdir dist/main --target node",
+    "start": "electron .",
+    "typecheck": "tsc --noEmit"
+  },
+  "dependencies": {
+    "electron": "^39.2.7"
+  },
+  "devDependencies": {
+    "@types/node": "^22.15.21",
+    "typescript": "^5.8.3",
+    "bun-types": "^1.2.16"
+  }
+}
