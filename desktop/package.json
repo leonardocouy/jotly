@@ -6,7 +6,7 @@
   "author": "Softaworks",
   "license": "MIT",
   "scripts": {
-    "dev": "bun run build && electron .",
+    "dev": "bun run build && ELECTRON_DISABLE_SANDBOX=1 electron .",
     "build": "bun build src/main/index.ts --outdir dist/main --target node",
     "start": "electron .",
     "typecheck": "tsc --noEmit"

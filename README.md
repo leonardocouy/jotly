@@ -60,6 +60,8 @@ cd desktop
 bun run dev
 ```
 
+**Note:** The dev script disables Electron sandbox for development. This is safe for local development but not recommended for production builds.
+
 ## Architecture
 
 ```
@@ -112,6 +114,35 @@ bun run dev
 - **Backend**: Python + FastAPI + uvicorn
 - **AI**: faster-whisper (optimized Whisper)
 - **Audio**: sounddevice
+
+## Troubleshooting
+
+### Electron Sandbox Error
+
+If you see "SUID sandbox helper binary was found, but is not configured correctly":
+
+This is expected in development. The dev script automatically disables the sandbox for development convenience. For production builds, the sandbox is enabled.
+
+**If you want to fix sandbox permissions permanently:**
+```bash
+sudo chown root desktop/node_modules/electron/dist/chrome-sandbox
+sudo chmod 4755 desktop/node_modules/electron/dist/chrome-sandbox
+```
+
+Then you can remove `ELECTRON_DISABLE_SANDBOX` from package.json.
+
+### Address Already in Use (Port 8765)
+
+If you see "Address already in use" on port 8765:
+
+```bash
+# Kill the process using port 8765
+sudo lsof -i :8765
+sudo kill -9 <PID>
+
+# Or change the port in backend/src/main.py or use the --port flag:
+uv run uvicorn src.main:app --reload --port 8766
+```
 
 ## License
 
