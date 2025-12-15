@@ -14,6 +14,7 @@
     "format": "biome format --write ."
   },
   "dependencies": {
+    "dbus-final": "github:Jelmerro/dbus-final",
     "electron": "^39.2.7",
     "electron-store": "^11.0.2"
   },

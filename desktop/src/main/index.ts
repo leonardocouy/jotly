@@ -12,6 +12,9 @@ import { TrayManager } from './tray.ts';
 import { SettingsManager, DEFAULT_HOTKEY } from './settings.ts';
 import { KeyCaptureWindow } from './key-capture.ts';
 
+// Enable Wayland GlobalShortcuts portal support BEFORE app.whenReady()
+app.commandLine.appendSwitch('enable-features', 'GlobalShortcutsPortal');
+
 /**
  * Copy text to system clipboard using xclip
  */
@@ -31,7 +34,7 @@ const BACKEND_URL = 'http://127.0.0.1:8765';
 // State
 let isRecording = false;
 let backendManager: BackendManager;
-let hotkeyManager: HotkeyManager;
+let hotkeyManager: HotkeyManager | undefined;
 let trayManager: TrayManager;
 let settingsManager: SettingsManager;
 let keyCaptureWindow: KeyCaptureWindow;
@@ -127,6 +130,19 @@ function showNotification(title: string, body: string): void {
  * Handle shortcut change request from tray menu
  */
 async function handleChangeShortcut(): Promise<void> {
+  if (!hotkeyManager) return;
+
+  if (hotkeyManager.usesPortal()) {
+    const ok = await hotkeyManager.configurePortalShortcut();
+    if (ok) {
+      trayManager.refreshMenu();
+      showNotification('Shortcut', 'Choose a shortcut for Jotly in the system dialog.');
+    } else {
+      showNotification('Shortcut', 'Failed to open the system shortcut dialog.');
+    }
+    return;
+  }
+
   const currentHotkey = settingsManager.getHotkey();
   const result = await keyCaptureWindow.capture(currentHotkey);
 
@@ -139,7 +155,7 @@ async function handleChangeShortcut(): Promise<void> {
   const newHotkey = result.accelerator ?? DEFAULT_HOTKEY;
 
   // Try to register the new hotkey
-  const success = hotkeyManager.setAccelerator(newHotkey);
+  const success = await hotkeyManager.setAccelerator(newHotkey);
 
   if (success) {
     // Persist the setting
@@ -151,7 +167,7 @@ async function handleChangeShortcut(): Promise<void> {
     showNotification('Shortcut Changed', `New shortcut: ${newHotkey}`);
   } else {
     // Failed to register - revert to previous
-    hotkeyManager.setAccelerator(currentHotkey);
+    await hotkeyManager.setAccelerator(currentHotkey);
 
     showNotification(
       'Shortcut Change Failed',
@@ -193,17 +209,28 @@ async function initialize(): Promise<void> {
     onToggleRecording: toggleRecording,
     onChangeShortcut: handleChangeShortcut,
     onQuit: () => app.quit(),
-    getCurrentHotkey: () => settingsManager.getHotkey(),
+    getCurrentHotkey: () => hotkeyManager?.getDisplayHotkey() ?? settingsManager.getHotkey(),
   });
 
   // Register global hotkey with saved accelerator
-  hotkeyManager = new HotkeyManager({
+  const hk = new HotkeyManager({
     onToggle: toggleRecording,
     accelerator: savedHotkey,
   });
-  hotkeyManager.register();
+  hotkeyManager = hk;
+  const hotkeyRegistered = await hk.register();
+  trayManager.refreshMenu();
 
-  showNotification('Jotly Ready', `Press ${savedHotkey} to start recording`);
+  if (!hotkeyRegistered) {
+    showNotification('Jotly', 'Failed to register global shortcut.');
+    return;
+  }
+
+  if (hk.usesPortal()) {
+    showNotification('Jotly Ready', 'Configure a shortcut for Jotly in the system dialog.');
+  } else {
+    showNotification('Jotly Ready', `Press ${savedHotkey} to start recording`);
+  }
 }
 
 // App lifecycle

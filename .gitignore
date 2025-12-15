@@ -2,7 +2,8 @@
 research/
 
 # Beads issue tracking (local)
-.beads/
+.beads/*
+!.beads/issues.jsonl
 
 # Python
 __pycache__/
