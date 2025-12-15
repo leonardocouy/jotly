@@ -81,8 +81,12 @@ class TranscriptionService:
         # Transcribe
         language_arg = None if language == "auto" else language
 
+        abs_audio = np.abs(audio)
         logger.debug(
-            f"Audio stats: len={len(audio)}, max={np.abs(audio).max():.4f}, mean={np.abs(audio).mean():.6f}"
+            "Audio stats: len=%d, max=%.4f, mean=%.6f",
+            len(audio),
+            float(abs_audio.max()),
+            float(abs_audio.mean()),
         )
 
         segments, info = self._model.transcribe(

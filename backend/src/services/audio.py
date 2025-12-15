@@ -2,7 +2,6 @@
 
 import logging
 import queue
-import threading
 from typing import Callable, Optional
 
 import numpy as np
@@ -106,8 +105,11 @@ class AudioService:
         audio = np.concatenate(self._audio_data)
         self._audio_data = []
 
+        duration_s = len(audio) / self.SAMPLE_RATE
         logger.info(
-            f"Recording stopped. Captured {len(audio)} samples ({len(audio) / self.SAMPLE_RATE:.2f}s)"
+            "Recording stopped. Captured %d samples (%.2fs)",
+            len(audio),
+            duration_s,
         )
         return audio
 
