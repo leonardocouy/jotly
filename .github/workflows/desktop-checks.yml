@@ -1,0 +1,42 @@
+name: Desktop Checks
+
+on:
+  pull_request:
+    paths:
+      - 'desktop/**'
+      - '.github/workflows/desktop-checks.yml'
+  push:
+    branches:
+      - '**'
+    paths:
+      - 'desktop/**'
+      - '.github/workflows/desktop-checks.yml'
+
+permissions:
+  contents: read
+
+concurrency:
+  group: checks-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  desktop:
+    name: Desktop checks
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: desktop
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: Setup Bun
+        uses: oven-sh/setup-bun@v2
+        with:
+          bun-version: latest
+      - name: Install dependencies
+        run: bun install --frozen-lockfile
+      - name: TypeScript typecheck
+        run: bun run typecheck
+      - name: Biome check
+        run: bun x biome check .
+
