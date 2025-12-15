@@ -30,8 +30,8 @@ cd jotly
 cd backend
 uv sync
 
-# Setup electron
-cd ../electron
+# Setup desktop
+cd ../desktop
 bun install
 ```
 
@@ -47,8 +47,8 @@ bun install
 cd backend
 uv run uvicorn src.main:app --reload --port 8765
 
-# Terminal 2 - Electron
-cd electron
+# Terminal 2 - Desktop
+cd desktop
 bun run dev
 ```
 
@@ -56,7 +56,7 @@ bun run dev
 
 ```
 ┌─────────────────────────────────────────────────────────────┐
-│                     Electron App (Bun)                      │
+│                    Desktop App (Bun)                        │
 │  ┌─────────────┐  ┌──────────────┐  ┌────────────────────┐  │
 │  │ Global      │  │ System Tray  │  │ HTTP Client        │  │
 │  │ Shortcut    │  │ (idle/rec)   │  │ (fetch backend)    │  │

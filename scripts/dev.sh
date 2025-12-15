@@ -6,11 +6,11 @@ set -e
 
 PROJECT_DIR="$(dirname "$(dirname "$(realpath "$0")")")"
 BACKEND_DIR="$PROJECT_DIR/backend"
-ELECTRON_DIR="$PROJECT_DIR/electron"
+DESKTOP_DIR="$PROJECT_DIR/desktop"
 
 echo "🎤 Starting Jotly development environment..."
-echo "   Backend:  $BACKEND_DIR"
-echo "   Electron: $ELECTRON_DIR"
+echo "   Backend: $BACKEND_DIR"
+echo "   Desktop: $DESKTOP_DIR"
 
 # Function to cleanup on exit
 cleanup() {
@@ -47,10 +47,10 @@ if ! curl -s http://127.0.0.1:8765/health > /dev/null 2>&1; then
     exit 1
 fi
 
-# Start Electron
+# Start Desktop
 echo ""
-echo "⚡ Starting Electron..."
-cd "$ELECTRON_DIR"
+echo "⚡ Starting Desktop..."
+cd "$DESKTOP_DIR"
 bun run dev
 
 # Wait for processes
