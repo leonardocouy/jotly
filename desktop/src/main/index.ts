@@ -4,10 +4,24 @@
  * Type less. Say more.
  */
 
-import { app, clipboard, Notification } from 'electron';
-import { BackendManager } from './backend';
-import { HotkeyManager } from './hotkey';
-import { TrayManager } from './tray';
+import { exec } from 'node:child_process';
+import { app, Notification } from 'electron';
+import { BackendManager } from './backend.ts';
+import { HotkeyManager } from './hotkey.ts';
+import { TrayManager } from './tray.ts';
+
+/**
+ * Copy text to system clipboard using xclip
+ */
+function copyToClipboard(text: string): void {
+  const child = exec('xclip -selection clipboard', (error) => {
+    if (error) {
+      console.error('Failed to copy to clipboard:', error);
+    }
+  });
+  child.stdin?.write(text);
+  child.stdin?.end();
+}
 
 // Backend API URL
 const BACKEND_URL = 'http://127.0.0.1:8765';
@@ -68,13 +82,14 @@ async function stopRecording(): Promise<void> {
     trayManager.setState('idle');
 
     if (result.text) {
-      // Copy to clipboard
-      clipboard.writeText(result.text);
+      // Copy to clipboard using xclip
+      console.log('Copying to clipboard:', result.text);
+      copyToClipboard(result.text);
+
       showNotification(
         'Transcribed',
         result.text.substring(0, 100) + (result.text.length > 100 ? '...' : ''),
       );
-      console.log('Transcription:', result.text);
     } else {
       showNotification('No speech detected', 'Try speaking louder or closer to the microphone');
     }

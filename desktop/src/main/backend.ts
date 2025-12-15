@@ -4,8 +4,12 @@
 
 import { spawn, type ChildProcess } from 'node:child_process';
 import * as path from 'node:path';
+import { fileURLToPath } from 'node:url';
 
 import { app } from 'electron';
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 
 const BACKEND_URL = 'http://127.0.0.1:8765';
 const HEALTH_CHECK_TIMEOUT = 30000; // 30 seconds
@@ -15,11 +19,17 @@ export class BackendManager {
   private process: ChildProcess | null = null;
 
   /**
-   * Start the Python backend process
+   * Start the Python backend process (or connect to existing one)
    */
   async start(): Promise<void> {
+    // First, check if backend is already running
+    if (await this.isHealthy()) {
+      console.log('Backend already running externally, connecting...');
+      return;
+    }
+
     if (this.process) {
-      console.log('Backend already running');
+      console.log('Backend process already managed by us');
       return;
     }
 
@@ -36,6 +46,7 @@ export class BackendManager {
         cwd: backendDir,
         stdio: ['ignore', 'pipe', 'pipe'],
         detached: false,
+        shell: true, // Use shell to find uv in PATH
       },
     );
 
@@ -115,8 +126,8 @@ export class BackendManager {
     const isDev = !app.isPackaged;
 
     if (isDev) {
-      // Development: relative to project root
-      return path.join(__dirname, '..', '..', '..', '..', 'backend');
+      // Development: relative to project root (desktop/src/main -> voice-to-text/backend)
+      return path.join(__dirname, '..', '..', '..', 'backend');
     }
 
     // Production: bundled with app

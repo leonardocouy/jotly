@@ -22,10 +22,14 @@ Jotly is a dead-simple voice-to-text tool that lives on your desktop and respect
   - Ubuntu/Debian: `sudo apt-get install libportaudio2 portaudio19-dev`
   - Fedora/RHEL: `sudo dnf install portaudio-devel`
   - Arch: `sudo pacman -S portaudio`
+- xclip (for clipboard support):
+  - Ubuntu/Debian: `sudo apt-get install xclip`
+  - Fedora/RHEL: `sudo dnf install xclip`
+  - Arch: `sudo pacman -S xclip`
 
 **Development Tools:**
 - Python 3.11+
-- Bun
+- Bun (JavaScript runtime)
 - uv (Python package manager)
 
 ### Installation
