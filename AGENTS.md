@@ -1,3 +1,167 @@
+# Jotly - Voice-to-Text Application
+
+## Project Overview
+
+**Jotly** is a dead-simple voice-to-text desktop application for Linux. It's designed to be:
+- **Offline-first**: All processing happens locally
+- **Privacy-respecting**: No data leaves your device
+- **Lightning fast**: Uses faster-whisper (optimized Whisper model)
+- **Lightweight**: Minimal dependencies, runs on any Linux desktop
+
+### Key Features
+
+- 🎤 Press `Super+Shift+R` to record, press again to transcribe
+- 📋 Auto-copy transcribed text to clipboard
+- 🔒 100% offline - Whisper runs locally
+- ⚡ Powered by faster-whisper optimization
+- 🐧 Linux-first (Electron + Python backend)
+
+## Tech Stack
+
+| Layer | Technologies |
+|-------|--------------|
+| **Frontend** | Electron (Bun) + TypeScript |
+| **Backend** | Python 3.11+ + FastAPI + uvicorn |
+| **AI/ML** | faster-whisper (optimized Whisper) |
+| **Audio** | sounddevice + numpy |
+| **Dev Tools** | mprocs (process management), uv (Python), Bun (Node) |
+
+## Project Structure
+
+```
+voice-to-text/
+├── desktop/              # Electron app (formerly "electron")
+│   ├── src/main/         # Main process (hotkeys, system tray, API calls)
+│   ├── package.json      # Build and dev scripts (with ELECTRON_DISABLE_SANDBOX)
+│   └── tsconfig.json     # TypeScript config
+├── backend/              # FastAPI server
+│   ├── src/
+│   │   ├── main.py       # FastAPI app entry
+│   │   └── services/
+│   │       ├── audio.py  # AudioService (sounddevice)
+│   │       └── transcription.py  # TranscriptionService (faster-whisper)
+│   ├── pyproject.toml    # Dependencies (fastapi, uvicorn, faster-whisper, sounddevice)
+│   └── README.md         # Backend-specific docs
+├── scripts/
+│   └── dev.sh            # Shell script runner (alternative to mprocs)
+├── mprocs.yaml           # **Recommended** - Process manager config for dev
+├── README.md             # Main project docs
+└── AGENTS.md             # This file
+```
+
+## Setup & Development
+
+### Prerequisites
+
+**System Dependencies:**
+- Linux desktop with ALSA/PulseAudio
+- **PortAudio library** (required by sounddevice):
+  - Ubuntu/Debian: `sudo apt-get install libportaudio2 portaudio19-dev`
+  - Fedora/RHEL: `sudo dnf install portaudio-devel`
+  - Arch: `sudo pacman -S portaudio`
+
+**Development Tools:**
+- Python 3.11+
+- Bun (JavaScript runtime)
+- uv (Python package manager)
+- Cargo (for mprocs installation)
+
+### Installation
+
+```bash
+# Clone and setup
+cd voice-to-text
+
+# Backend
+cd backend && uv sync && cd ..
+
+# Desktop/Frontend
+cd desktop && bun install && cd ..
+```
+
+### Running Development Environment
+
+**Option 1: Using mprocs (recommended)**
+```bash
+cargo install mprocs  # If not installed
+mprocs                # Runs backend + desktop with interactive TUI
+```
+
+**Option 2: Using shell script**
+```bash
+./scripts/dev.sh
+```
+
+**Option 3: Manual (separate terminals)**
+```bash
+# Terminal 1
+cd backend && uv run uvicorn src.main:app --reload --port 8765
+
+# Terminal 2
+cd desktop && bun run dev
+```
+
+## API Endpoints
+
+The backend runs on `http://127.0.0.1:8765`:
+
+| Endpoint | Method | Purpose |
+|----------|--------|---------|
+| `/health` | GET | Health check |
+| `/status` | GET | Current recording status |
+| `/recording/start` | POST | Start recording audio |
+| `/recording/stop` | POST | Stop recording and transcribe |
+| `/models` | GET | List available Whisper models |
+| `/models/load` | POST | Load a specific model |
+| `/devices` | GET | List audio input devices |
+
+## Common Tasks
+
+### Add New Whisper Model
+
+1. Update `backend/src/services/transcription.py` - add model size
+2. Update `README.md` - Whisper Models table
+3. Test with `/models` endpoint
+
+### Change Default Recording Hotkey
+
+1. Edit `desktop/src/main/hotkey.ts` - change keybinding
+2. Rebuild: `cd desktop && bun run build`
+3. Test in dev environment
+
+### Debug Audio Issues
+
+1. Check available devices: `curl http://127.0.0.1:8765/devices`
+2. Verify PortAudio is installed: `ldconfig -p | grep portaudio`
+3. Check backend logs in mprocs terminal
+
+### Enable Electron Sandbox for Production
+
+1. Remove `ELECTRON_DISABLE_SANDBOX=1` from `desktop/package.json` dev script
+2. Fix sandbox permissions:
+   ```bash
+   sudo chown root desktop/node_modules/electron/dist/chrome-sandbox
+   sudo chmod 4755 desktop/node_modules/electron/dist/chrome-sandbox
+   ```
+
+## Troubleshooting
+
+### OSError: PortAudio library not found
+Install PortAudio system dependency (see Prerequisites section)
+
+### SUID sandbox error during development
+Expected in dev mode. The `mprocs.yaml` and `package.json` automatically disable sandbox with `ELECTRON_DISABLE_SANDBOX=1`
+
+### Port 8765 already in use
+```bash
+sudo lsof -i :8765
+sudo kill -9 <PID>
+# Or change port: uv run uvicorn src.main:app --reload --port 8766
+```
+
+### Missing dependencies when importing
+Check if the package requires system libraries. See "How to Find Missing System Dependencies" in backend/README.md
+
 ## Issue Tracking with bd (beads)
 
 **IMPORTANT**: This project uses **bd (beads)** for ALL issue tracking. Do NOT use markdown TODOs, task lists, or other tracking methods.
