@@ -126,7 +126,7 @@ export class BackendManager {
     const isDev = !app.isPackaged;
 
     if (isDev) {
-      // Development: relative to project root (desktop/src/main -> voice-to-text/backend)
+      // Development: relative to project root (desktop/src/main -> jotly/backend)
       return path.join(__dirname, '..', '..', '..', 'backend');
     }
 

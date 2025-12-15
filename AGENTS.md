@@ -29,7 +29,7 @@
 ## Project Structure
 
 ```
-voice-to-text/
+jotly/
 ├── desktop/              # Electron app (formerly "electron")
 │   ├── src/main/         # Main process (hotkeys, system tray, API calls)
 │   ├── package.json      # Build and dev scripts (with ELECTRON_DISABLE_SANDBOX)
