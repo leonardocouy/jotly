@@ -2,7 +2,7 @@
  * Tray Manager - System tray icon and menu
  */
 
-import { Tray, Menu, nativeImage } from 'electron';
+import { Menu, nativeImage, Tray } from 'electron';
 
 type TrayState = 'idle' | 'recording' | 'transcribing';
 

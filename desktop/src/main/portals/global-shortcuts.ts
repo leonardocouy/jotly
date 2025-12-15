@@ -44,7 +44,7 @@ export class GlobalShortcutsPortal extends DesktopPortal {
         {
           // eslint-disable-next-line @typescript-eslint/naming-convention
           handle_token: new DBus.Variant('s', request.token),
-        }
+        },
       );
     });
   }

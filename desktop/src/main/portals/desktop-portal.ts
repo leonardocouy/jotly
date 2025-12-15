@@ -7,8 +7,8 @@
  * @see https://flatpak.github.io/xdg-desktop-portal/
  */
 
-import DBus from 'dbus-final';
 import { EventEmitter } from 'node:events';
+import DBus from 'dbus-final';
 
 /**
  * Extended MessageBus type that includes the name property
@@ -32,7 +32,7 @@ export class DesktopPortal extends EventEmitter {
   protected async init(): Promise<void> {
     this.portals = await this.bus.getProxyObject(
       'org.freedesktop.portal.Desktop',
-      '/org/freedesktop/portal/desktop'
+      '/org/freedesktop/portal/desktop',
     );
   }
 
@@ -48,7 +48,7 @@ export class DesktopPortal extends EventEmitter {
    * @see https://flatpak.github.io/xdg-desktop-portal/#idm9
    */
   protected async makeRequest(
-    method: (request: { token: string; path: string }) => void
+    method: (request: { token: string; path: string }) => void,
   ): Promise<DBus.Message> {
     return new Promise<DBus.Message>((resolve, reject) => {
       const request = this.generateToken('request');

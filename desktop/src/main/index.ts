@@ -8,9 +8,9 @@ import { exec } from 'node:child_process';
 import { app, Notification } from 'electron';
 import { BackendManager } from './backend.ts';
 import { HotkeyManager } from './hotkey.ts';
-import { TrayManager } from './tray.ts';
-import { SettingsManager, DEFAULT_HOTKEY } from './settings.ts';
 import { KeyCaptureWindow } from './key-capture.ts';
+import { DEFAULT_HOTKEY, SettingsManager } from './settings.ts';
+import { TrayManager } from './tray.ts';
 
 // Enable Wayland GlobalShortcuts portal support BEFORE app.whenReady()
 app.commandLine.appendSwitch('enable-features', 'GlobalShortcutsPortal');

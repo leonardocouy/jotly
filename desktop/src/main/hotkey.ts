@@ -84,7 +84,9 @@ export class HotkeyManager {
    * Check if shortcut is registered
    */
   isRegistered(): boolean {
-    return this.mode === 'electron' ? globalShortcut.isRegistered(this.accelerator) : this.registered;
+    return this.mode === 'electron'
+      ? globalShortcut.isRegistered(this.accelerator)
+      : this.registered;
   }
 
   /**
