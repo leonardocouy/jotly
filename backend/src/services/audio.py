@@ -106,7 +106,9 @@ class AudioService:
         audio = np.concatenate(self._audio_data)
         self._audio_data = []
 
-        logger.info(f"Recording stopped. Captured {len(audio)} samples ({len(audio) / self.SAMPLE_RATE:.2f}s)")
+        logger.info(
+            f"Recording stopped. Captured {len(audio)} samples ({len(audio) / self.SAMPLE_RATE:.2f}s)"
+        )
         return audio
 
     def is_recording(self) -> bool:
