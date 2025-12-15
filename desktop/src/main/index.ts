@@ -70,7 +70,10 @@ async function stopRecording(): Promise<void> {
     if (result.text) {
       // Copy to clipboard
       clipboard.writeText(result.text);
-      showNotification('Transcribed', result.text.substring(0, 100) + (result.text.length > 100 ? '...' : ''));
+      showNotification(
+        'Transcribed',
+        result.text.substring(0, 100) + (result.text.length > 100 ? '...' : ''),
+      );
       console.log('Transcription:', result.text);
     } else {
       showNotification('No speech detected', 'Try speaking louder or closer to the microphone');

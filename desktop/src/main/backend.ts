@@ -2,9 +2,10 @@
  * Backend Manager - Manages the Python FastAPI process
  */
 
-import { spawn, ChildProcess } from 'child_process';
+import { spawn, type ChildProcess } from 'node:child_process';
+import * as path from 'node:path';
+
 import { app } from 'electron';
-import * as path from 'path';
 
 const BACKEND_URL = 'http://127.0.0.1:8765';
 const HEALTH_CHECK_TIMEOUT = 30000; // 30 seconds
@@ -35,7 +36,7 @@ export class BackendManager {
         cwd: backendDir,
         stdio: ['ignore', 'pipe', 'pipe'],
         detached: false,
-      }
+      },
     );
 
     // Log stdout

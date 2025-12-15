@@ -2,8 +2,7 @@
  * Tray Manager - System tray icon and menu
  */
 
-import { Tray, Menu, nativeImage, app } from 'electron';
-import * as path from 'path';
+import { Tray, Menu, nativeImage } from 'electron';
 
 type TrayState = 'idle' | 'recording' | 'transcribing';
 
@@ -52,13 +51,19 @@ export class TrayManager {
     let r: number, g: number, b: number;
     switch (this.state) {
       case 'recording':
-        r = 255; g = 0; b = 0; // Red
+        r = 255;
+        g = 0;
+        b = 0; // Red
         break;
       case 'transcribing':
-        r = 255; g = 165; b = 0; // Orange
+        r = 255;
+        g = 165;
+        b = 0; // Orange
         break;
       default:
-        r = 100; g = 100; b = 100; // Gray
+        r = 100;
+        g = 100;
+        b = 100; // Gray
     }
 
     // Create a circle
@@ -73,7 +78,7 @@ export class TrayManager {
 
         const offset = (y * size + x) * 4;
         if (distance <= radius) {
-          canvas[offset] = r;     // R
+          canvas[offset] = r; // R
           canvas[offset + 1] = g; // G
           canvas[offset + 2] = b; // B
           canvas[offset + 3] = 255; // A

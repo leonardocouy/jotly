@@ -11,7 +11,7 @@
     "build": "electron-vite build",
     "start": "electron .",
     "typecheck": "tsc --noEmit",
-    "lint": "biome check --apply .",
+    "lint": "biome lint --write",
     "format": "biome format --write ."
   },
   "dependencies": {
