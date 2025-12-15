@@ -45,12 +45,27 @@ bun install
 
 ### Development
 
+**Option 1: Using mprocs (recommended)**
+
 ```bash
-# Run both backend and frontend
+# Install mprocs (if not already installed)
+cargo install mprocs
+
+# Run all services with interactive TUI
+mprocs
+```
+
+This gives you an interactive terminal UI where you can view and control logs from both services.
+
+**Option 2: Using shell script**
+
+```bash
 ./scripts/dev.sh
+```
 
-# Or run separately:
+**Option 3: Manual setup (separate terminals)**
 
+```bash
 # Terminal 1 - Backend
 cd backend
 uv run uvicorn src.main:app --reload --port 8765
@@ -60,7 +75,7 @@ cd desktop
 bun run dev
 ```
 
-**Note:** The dev script disables Electron sandbox for development. This is safe for local development but not recommended for production builds.
+**Note:** The dev scripts disable Electron sandbox for development. This is safe for local development but not recommended for production builds.
 
 ## Architecture
 
