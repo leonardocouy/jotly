@@ -16,6 +16,14 @@ Jotly is a dead-simple voice-to-text tool that lives on your desktop and respect
 
 ### Prerequisites
 
+**System Dependencies:**
+- Linux desktop environment (ALSA/PulseAudio audio support)
+- PortAudio library (for audio input):
+  - Ubuntu/Debian: `sudo apt-get install libportaudio2 portaudio19-dev`
+  - Fedora/RHEL: `sudo dnf install portaudio-devel`
+  - Arch: `sudo pacman -S portaudio`
+
+**Development Tools:**
 - Python 3.11+
 - Bun
 - uv (Python package manager)
