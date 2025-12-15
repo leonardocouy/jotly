@@ -2,15 +2,9 @@ name: Desktop Checks
 
 on:
   pull_request:
-    paths:
-      - 'desktop/**'
-      - '.github/workflows/desktop-checks.yml'
   push:
     branches:
       - '**'
-    paths:
-      - 'desktop/**'
-      - '.github/workflows/desktop-checks.yml'
 
 permissions:
   contents: read
@@ -39,4 +33,3 @@ jobs:
         run: bun run typecheck
       - name: Biome check
         run: bun x biome check .
-
