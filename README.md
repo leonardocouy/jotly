@@ -16,7 +16,7 @@ Jotly is a dead-simple voice-to-text tool that lives on your desktop and respect
 
 ### Prerequisites
 
-- Python 3.10+
+- Python 3.11+
 - Bun
 - uv (Python package manager)
 
