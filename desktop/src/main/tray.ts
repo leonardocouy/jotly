@@ -8,7 +8,9 @@ type TrayState = 'idle' | 'recording' | 'transcribing';
 
 interface TrayManagerOptions {
   onToggleRecording: () => void;
+  onChangeShortcut: () => void;
   onQuit: () => void;
+  getCurrentHotkey: () => string;
 }
 
 export class TrayManager {
@@ -100,8 +102,10 @@ export class TrayManager {
   private updateMenu(): void {
     if (!this.tray) return;
 
+    const currentHotkey = this.options.getCurrentHotkey();
+
     const statusLabel = {
-      idle: 'Ready (Super+Shift+R)',
+      idle: `Ready (${currentHotkey})`,
       recording: 'Recording...',
       transcribing: 'Transcribing...',
     };
@@ -119,12 +123,25 @@ export class TrayManager {
       },
       { type: 'separator' },
       {
+        label: 'Change Shortcut...',
+        click: () => this.options.onChangeShortcut(),
+        enabled: this.state === 'idle', // Only allow changes when idle
+      },
+      { type: 'separator' },
+      {
         label: 'Quit',
         click: () => this.options.onQuit(),
       },
     ]);
 
     this.tray.setContextMenu(menu);
+  }
+
+  /**
+   * Force menu refresh (call after hotkey change)
+   */
+  refreshMenu(): void {
+    this.updateMenu();
   }
 
   /**

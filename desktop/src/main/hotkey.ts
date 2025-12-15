@@ -4,12 +4,9 @@
 
 import { globalShortcut, app } from 'electron';
 
-// Default hotkey: Super+Shift+R
-const DEFAULT_HOTKEY = 'Super+Shift+R';
-
 interface HotkeyManagerOptions {
   onToggle: () => void;
-  accelerator?: string;
+  accelerator: string; // Required - provided by SettingsManager
 }
 
 export class HotkeyManager {
@@ -19,10 +16,17 @@ export class HotkeyManager {
 
   constructor(options: HotkeyManagerOptions) {
     this.onToggle = options.onToggle;
-    this.accelerator = options.accelerator || DEFAULT_HOTKEY;
+    this.accelerator = options.accelerator;
 
     // Enable Wayland GlobalShortcuts portal support
     app.commandLine.appendSwitch('enable-features', 'GlobalShortcutsPortal');
+  }
+
+  /**
+   * Get the current accelerator
+   */
+  getAccelerator(): string {
+    return this.accelerator;
   }
 
   /**

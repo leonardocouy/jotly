@@ -9,6 +9,8 @@ import { app, Notification } from 'electron';
 import { BackendManager } from './backend.ts';
 import { HotkeyManager } from './hotkey.ts';
 import { TrayManager } from './tray.ts';
+import { SettingsManager, DEFAULT_HOTKEY } from './settings.ts';
+import { KeyCaptureWindow } from './key-capture.ts';
 
 /**
  * Copy text to system clipboard using xclip
@@ -31,6 +33,8 @@ let isRecording = false;
 let backendManager: BackendManager;
 let hotkeyManager: HotkeyManager;
 let trayManager: TrayManager;
+let settingsManager: SettingsManager;
+let keyCaptureWindow: KeyCaptureWindow;
 
 /**
  * Start recording
@@ -120,10 +124,55 @@ function showNotification(title: string, body: string): void {
 }
 
 /**
+ * Handle shortcut change request from tray menu
+ */
+async function handleChangeShortcut(): Promise<void> {
+  const currentHotkey = settingsManager.getHotkey();
+  const result = await keyCaptureWindow.capture(currentHotkey);
+
+  if (!result.success) {
+    // User cancelled
+    return;
+  }
+
+  // Determine new hotkey (reset to default if accelerator is undefined)
+  const newHotkey = result.accelerator ?? DEFAULT_HOTKEY;
+
+  // Try to register the new hotkey
+  const success = hotkeyManager.setAccelerator(newHotkey);
+
+  if (success) {
+    // Persist the setting
+    settingsManager.setHotkey(newHotkey);
+
+    // Update tray menu to show new hotkey
+    trayManager.refreshMenu();
+
+    showNotification('Shortcut Changed', `New shortcut: ${newHotkey}`);
+  } else {
+    // Failed to register - revert to previous
+    hotkeyManager.setAccelerator(currentHotkey);
+
+    showNotification(
+      'Shortcut Change Failed',
+      `Could not register "${newHotkey}". It may be in use by another application.`,
+    );
+  }
+}
+
+/**
  * Initialize the application
  */
 async function initialize(): Promise<void> {
   console.log('Initializing Jotly...');
+
+  // Initialize settings first
+  settingsManager = new SettingsManager();
+  keyCaptureWindow = new KeyCaptureWindow();
+
+  // Get saved hotkey (or default)
+  const savedHotkey = settingsManager.getHotkey();
+  console.log(`Using hotkey: ${savedHotkey}`);
 
   // Start Python backend
   backendManager = new BackendManager();
@@ -142,16 +191,19 @@ async function initialize(): Promise<void> {
   // Create system tray
   trayManager = new TrayManager({
     onToggleRecording: toggleRecording,
+    onChangeShortcut: handleChangeShortcut,
     onQuit: () => app.quit(),
+    getCurrentHotkey: () => settingsManager.getHotkey(),
   });
 
-  // Register global hotkey
+  // Register global hotkey with saved accelerator
   hotkeyManager = new HotkeyManager({
     onToggle: toggleRecording,
+    accelerator: savedHotkey,
   });
   hotkeyManager.register();
 
-  showNotification('Jotly Ready', 'Press Super+Shift+R to start recording');
+  showNotification('Jotly Ready', `Press ${savedHotkey} to start recording`);
 }
 
 // App lifecycle
