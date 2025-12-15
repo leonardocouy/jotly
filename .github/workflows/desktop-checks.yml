@@ -32,4 +32,4 @@ jobs:
       - name: TypeScript typecheck
         run: bun run typecheck
       - name: Biome check
-        run: bun x biome check .
+        run: bun run check
