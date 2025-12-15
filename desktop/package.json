@@ -2,6 +2,7 @@
   "name": "jotly",
   "version": "0.1.0",
   "description": "Type less. Say more. Jotly is a dead-simple voice-to-text tool that lives on your desktop and respects your privacy. Open-source, offline-first, and lightning fast.",
+  "type": "module",
   "main": "dist/main/index.js",
   "author": "Softaworks",
   "license": "MIT",
